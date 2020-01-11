@@ -128,7 +128,7 @@ class game():
             print('Game Over')
         else:
             self.map[self.pos[0]][self.pos[1]] = self.status_sign['clicked'][1]
-            stack = [[self.pos[0],self.pos[1]]]
+            stack = []
             miner_options = {(+1,+1), (+1,-1), (+1,0), (0,+1), (0,-1), (-1, 0), (-1, -1), (-1, +1)}
             # next_step_options = {(+1,0), (0,+1), (0,-1), (-1, 0)}
             miner_count = 0
@@ -137,6 +137,7 @@ class game():
                 if 0 <= op_x < self.MAP_SIZE and 0 <= op_y < self.MAP_SIZE and self._hidden_map[op_x][op_y] == True:
                     miner_count += 1
                 if miner_count >0: self.map[self.pos[0]][self.pos[1]] = str(miner_count)
+                else: stack.append([self.pos[0],self.pos[1]])
 
             while stack:
                 x,y = stack.pop()
