@@ -30,8 +30,8 @@ class game():
 
     def __game_initialize(self):
         if self.hard == 'Normal':
-            self.MAP_SIZE = 9
-            self.MINERS_SIZE = 10
+            self.MAP_SIZE = 10
+            self.MINERS_SIZE = 20
             self._hidden_map = None
             self.map = [[self.status_sign['waiting'][1] for i in range(self.MAP_SIZE)] for j in range(self.MAP_SIZE)]
 
@@ -130,12 +130,19 @@ class game():
             self.map[self.pos[0]][self.pos[1]] = self.status_sign['clicked'][1]
             stack = [[self.pos[0],self.pos[1]]]
             miner_options = {(+1,+1), (+1,-1), (+1,0), (0,+1), (0,-1), (-1, 0), (-1, -1), (-1, +1)}
-            next_step_options = {(+1,0), (0,+1), (0,-1), (-1, 0)}
+            # next_step_options = {(+1,0), (0,+1), (0,-1), (-1, 0)}
+            miner_count = 0
+            for op in miner_options:
+                op_x, op_y = self.pos[0] + op[0], self.pos[1] + op[1]
+                if 0 <= op_x < self.MAP_SIZE and 0 <= op_y < self.MAP_SIZE and self._hidden_map[op_x][op_y] == True:
+                    miner_count += 1
+                if miner_count >0: self.map[self.pos[0]][self.pos[1]] = str(miner_count)
+
             while stack:
                 x,y = stack.pop()
-                for option in next_step_options:
+                for option in miner_options:
                     _x, _y = x+option[0], y+option[1]
-                    if 0 <= _x < self.MAP_SIZE and 0 <= _y < self.MAP_SIZE and self.map[_x][_y] not in [self.status_sign['clicked'][1], self.status_sign['miner'][1]]:
+                    if 0 <= _x < self.MAP_SIZE and 0 <= _y < self.MAP_SIZE and self.map[_x][_y] not in [self.status_sign['clicked'][1]] and self._hidden_map[_x][_y] != True:
                         miner_count = 0
                         explore_next = True
                         # TODO judge the explore series
@@ -143,7 +150,7 @@ class game():
                             op_x, op_y = _x + op[0], _y + op[1]
                             if 0<= op_x < self.MAP_SIZE and 0 <= op_y < self.MAP_SIZE and self._hidden_map[op_x][op_y] == True: miner_count += 1
                             # if 0<= op_x < self.MAP_SIZE and 0 <= op_y < self.MAP_SIZE and isinstance(self.map[op_x][op_y], str): explore_next = True
-                        if miner_count == 0 and explore_next == True:
+                        if miner_count == 0:
                             stack.append([_x,_y])
                             self.map[_x][_y] = self.status_sign['clicked'][1]
                         elif miner_count > 0:
